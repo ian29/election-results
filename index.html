@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Marion County Election Results by Precinct</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<style>
+
+#features {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40%;
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.map-overlay {
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  position: absolute;
+  width: 200px;
+  top: 0;
+  left: 0;
+  padding: 10px;
+}
+ 
+.map-overlay .map-overlay-inner {
+background-color: #fff;
+box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+border-radius: 3px;
+padding: 10px;
+margin-bottom: 10px;
+}
+ 
+.map-overlay-inner fieldset {
+border: none;
+padding: 0;
+margin: 0 0 10px;
+}
+ 
+.map-overlay-inner fieldset:last-child {
+margin: 0;
+}
+ 
+.map-overlay-inner select {
+  width: 100%;
+}
+ 
+.map-overlay-inner label {
+  display: block;
+  font-weight: bold;
+  margin: 0 0 5px;
+}
+ 
+.map-overlay-inner button {
+  display: inline-block;
+  width: 100%;
+  height: 20px; 
+  border: none;
+  cursor: pointer;
+}
+ 
+.map-overlay-inner button:focus {
+  outline: none;
+}
+ 
+.map-overlay-inner button:hover {
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+</style>
+<div id="map"></div>
+
+<!-- tooltip UI -->
+<pre id="features"></pre> 
+
+<!-- layer switcher UI -->
+<div class="map-overlay top">
+  <div class="map-overlay-inner">
+  <fieldset>
+  <label>Pick a Layer</label>
+  <div id="swatches"></div>
+  <p>Darker colors mean higher % turnout</p>
+  </fieldset>
+  </div>
+</div>
+<script>
+    
+mapboxgl.accessToken = 'pk.eyJ1IjoidmlsbGVkYSIsImEiOiJNY2hHRXVrIn0.epqbDBYitFBInieZNLLiWw';
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/villeda/ckoa3b8kh0l6h17pfpf4oci2t',
+  center: [-81.98, 29.2],
+  zoom: 11,
+  hash: true
+});
+
+
+// Tool tip 
+// ----------------------------------------------------------------------------
+
+map.on('mousemove', function (e) {
+  var features = map.queryRenderedFeatures(e.point, { layers: ['precincts fill'] });
+
+  // Limit the number of properties we're displaying for
+  // legibility and performance
+  var displayProperties = [ 'properties', 'id' ];
+  var displayFeatures = features.map((feat) => feat.properties);
+    
+  document.getElementById('features').innerHTML = JSON.stringify(displayFeatures, null, 2);
+});
+
+
+// Layer Switcher 
+// ----------------------------------------------------------------------------
+const swatches = document.getElementById('swatches');
+// var colors = [
+//   '#ffffcc',
+//   '#a1dab4',
+//   '#41b6c4',
+//   '#2c7fb8',
+//   '#253494',
+//   '#fed976',
+//   '#feb24c',
+//   '#fd8d3c',
+//   '#f03b20',
+//   '#bd0026'
+// ];
+ 
+const layers = [
+  { name: 'b_turnout', display: "Black turnout", max: 1, min: 0, color: '#bd0026'}, 
+  { name: 'w_turnout', display: "White turnout", max: 1, min: 0, color: '#f03b20'},
+  { name: 'h_turnout', display: "Hispanic turnout", max: 1, min: 0, color: '#fd8d3c'} 
+];
+layers.forEach((layer) => {
+  var swatch = document.createElement('button');
+  swatch.style.backgroundColor = layer.color;
+  swatch.innerHTML = layer.display;
+  swatch.addEventListener('click', () => {
+    let ramp = ["interpolate",["linear"],["get",layer.name],layer.min,"hsla(0, 0%, 0%, 0)",layer.max,layer.color];
+    map.setPaintProperty('precincts fill', 'fill-color', ramp);
+  });
+  swatches.appendChild(swatch);
+});
+
+</script>
+ 
+</body>
+</html>
