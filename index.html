@@ -34,21 +34,21 @@ body { margin: 0; padding: 0; }
 }
  
 .map-overlay .map-overlay-inner {
-background-color: #fff;
-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-border-radius: 3px;
-padding: 10px;
-margin-bottom: 10px;
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
  
 .map-overlay-inner fieldset {
-border: none;
-padding: 0;
-margin: 0 0 10px;
+  border: none;
+  padding: 0;
+  margin: 0 0 10px;
 }
  
 .map-overlay-inner fieldset:last-child {
-margin: 0;
+  margin: 0;
 }
  
 .map-overlay-inner select {
@@ -89,7 +89,7 @@ margin: 0;
   <fieldset>
   <label>Pick a Layer</label>
   <div id="swatches"></div>
-  <p>Darker colors mean higher % turnout</p>
+  <p>Darker colors mean higher values</p>
   </fieldset>
   </div>
 </div>
@@ -137,6 +137,9 @@ const swatches = document.getElementById('swatches');
 // ];
  
 const layers = [
+  { name: 'b_didnt_vote', display: "Black Didn't Vote", max: 629, min: 1, color: '#41b6c4'}, 
+  { name: 'w_didnt_vote', display: "White Didn't Vote", max: 1580, min: 1, color: '#2c7fb8'},
+  { name: 'h_didnt_vote', display: "Hispanic Didn't Vote", max: 826, min: 1, color: '#253494'},
   { name: 'b_turnout', display: "Black turnout", max: 1, min: 0, color: '#bd0026'}, 
   { name: 'w_turnout', display: "White turnout", max: 1, min: 0, color: '#f03b20'},
   { name: 'h_turnout', display: "Hispanic turnout", max: 1, min: 0, color: '#fd8d3c'} 
