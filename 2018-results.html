@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Marion County 2020 Election Results by Precinct</title>
+<title>Marion County Election Results by Precinct</title>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 <link href="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js"></script>
@@ -12,7 +12,7 @@
 <style>
 
 body {
-  font: 16px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -21,20 +21,17 @@ body {
 
 #features {
   position: absolute;
-  top: 22%;
+  top: 0;
+  right: 0;
   bottom: 0;
-  left: 10px;
-  width: 29%;
-  padding: 10px;
+  width: 40%;
+  overflow: auto;
   background: rgba(255, 255, 255, 0.8);
-  border-radius: 3px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  margin: 0 0 10px;
 }
 
 .map-overlay {
   position: absolute;
-  width: 30%;
+  width: 200px;
   top: 0;
   left: 0;
   padding: 10px;
@@ -88,13 +85,13 @@ body {
 <div id="map"></div>
 
 <!-- tooltip UI -->
-<div class="map-overlay" id="features"></div>
+<div id="features"></div>
 
 <!-- layer switcher UI -->
 <div class="map-overlay top">
   <div class="map-overlay-inner">
   <fieldset>
-  <label>2020 General: Where registered voters didn't vote</label>
+  <label>Pick a Layer</label>
   <div id="swatches"></div>
   <p>Darker colors mean higher values</p>
   </fieldset>
@@ -105,7 +102,7 @@ body {
 mapboxgl.accessToken = 'pk.eyJ1IjoidmlsbGVkYSIsImEiOiJNY2hHRXVrIn0.epqbDBYitFBInieZNLLiWw';
 var map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/villeda/ckpmpsi7l7qfz18s4o7lls462',
+  style: 'mapbox://styles/villeda/ckoa3b8kh0l6h17pfpf4oci2t',
   center: [-81.98, 29.2],
   zoom: 11,
   hash: true
@@ -121,10 +118,7 @@ map.on('mousemove', function (e) {
   // Limit the number of properties we're displaying for
   // legibility and performance
   var displayProperties = [ 'properties', 'id' ];
-  var displayFeatures = features.map((feat) => feat.properties); 
-  // var displayFeatures = features.map((feat) => { 
-  //   return Object.keys(feat.properties).filter((prop) => prop.includes('didnt'));
-  // });
+  var displayFeatures = features.map((feat) => feat.properties);
     
   if (displayFeatures.length) {
     document.getElementById('features').innerHTML = formatJson(displayFeatures[0]);
@@ -135,21 +129,10 @@ map.on('mousemove', function (e) {
 function formatJson(json) {
   let table = document.createElement('table');
 
-  Object.keys(json)
-    .filter((prop) => { return prop.includes('didnt') || prop.includes('precinct'); })
-    .forEach((prop) => {
-      let tr = table.insertRow();
-      let label; 
-      switch(prop[0]) {
-        case 'b': label = 'Black'; break;
-        case 'w': label = 'White'; break;
-        case 'h': label = 'Hispanic'; break;
-        case 'o': label = 'Other'; break;
-        case 't': label = 'Total'; break;
-        default: label = 'Precinct'
-      }
-      tr.insertCell().innerHTML = label;
-      tr.insertCell().innerHTML = json[prop];
+  Object.keys(json).forEach((prop) => {
+    let tr = table.insertRow();
+    tr.insertCell().innerHTML = prop;
+    tr.insertCell().innerHTML = json[prop];
   });
 
   return table.outerHTML;
@@ -160,15 +143,15 @@ function formatJson(json) {
 const swatches = document.getElementById('swatches');
  
 const layers = [
-  { name: 'b_didnt_vote', display: "Black Didn't Vote", max: 474, min: 1, color: '#41b6c4'},
-  { name: 'w_didnt_vote', display: "White Didn't Vote", max: 871, min: 1, color: '#2c7fb8'},
-  { name: 'h_didnt_vote', display: "Hispanic Didn't Vote", max: 583, min: 1, color: '#fd8d3c'},
+  { name: 'b_didnt_vote', display: "Black Didn't Vote", max: 629, min: 1, color: '#41b6c4'},
+  { name: 'w_didnt_vote', display: "White Didn't Vote", max: 1580, min: 1, color: '#2c7fb8'},
+  { name: 'h_didnt_vote', display: "Hispanic Didn't Vote", max: 826, min: 1, color: '#253494'},
   // { name: 'b_defecit', display: "Black Didn't Vote", max: 105, min: -32, color: '#41b6c4'},
   // { name: 'w_defecit', display: "White Didn't Vote", max: 240, min: -1499, color: '#2c7fb8'},
   // { name: 'h_defecit', display: "Hispanic Didn't Vote", max: 293, min: -11, color: '#253494'},
-  // { name: 'b_turnout', display: "Black turnout", max: 1, min: 0, color: '#bd0026'}, 
-  // { name: 'w_turnout', display: "White turnout", max: 1, min: 0, color: '#f03b20'},
-  // { name: 'h_turnout', display: "Hispanic turnout", max: 1, min: 0, color: '#fd8d3c'} 
+  { name: 'b_turnout', display: "Black turnout", max: 1, min: 0, color: '#bd0026'}, 
+  { name: 'w_turnout', display: "White turnout", max: 1, min: 0, color: '#f03b20'},
+  { name: 'h_turnout', display: "Hispanic turnout", max: 1, min: 0, color: '#fd8d3c'} 
 ];
 
 layers.forEach((layer) => {
